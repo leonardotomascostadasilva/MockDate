@@ -1,13 +1,14 @@
 using Calendar.Services;
+using Microsoft.Extensions.Time.Testing;
+using Moq;
 using Moq.AutoMock;
 using Xunit;
-using Microsoft.TeamFoundation.Framework.Common;
 
 namespace UnitTests
 {
     public class CalendarServiceTests
     {
-        private readonly ICalendarService _calendarService;
+        private readonly CalendarService _calendarService;
         private readonly AutoMocker _mock = new();
 
         public CalendarServiceTests()
@@ -19,7 +20,9 @@ namespace UnitTests
         {
             //Arrange
             var test = new DateTime(2024, 02, 02);
-            _mock.GetMock<ITimeProvider>().Setup(e => e.Now).Returns(test);
+           _mock
+               .GetMock<TimeProvider>()
+               .Setup(e => e.GetUtcNow()).Returns(test);
 
             //Act
             var result = _calendarService.IsItWednesday();
@@ -28,16 +31,18 @@ namespace UnitTests
             Assert.Equal(result, test);
         }
         [Fact]
-        public void IsItWednesday_WhenIsNotWednesday_ReturnTrue()
+        public void IsItWednesdayWithFakerMock_WhenIsNotWednesday_ReturnFalse()
         {
             //Arrange
-            _mock.GetMock<ITimeProvider>().Setup(e => e.Now).Returns(new DateTime(2024, 02, 07));
+            var test = new DateTime(2024, 02, 02);
+            var fakeTime = new FakeTimeProvider(test);
+            var calendarService = new CalendarService(fakeTime);   
 
             //Act
-            var result = _calendarService.IsItWednesday();
+            var result = calendarService.IsItWednesday();
 
             //Assert
-           
+            Assert.Equal(result, test);
         }
     }
 }

@@ -1,20 +1,20 @@
-﻿using Microsoft.TeamFoundation.Framework.Common;
-
+﻿
 namespace Calendar.Services
 {
     public class CalendarService : ICalendarService
     {
-        private readonly ITimeProvider _timeProvider;
+        private readonly TimeProvider _timeProvider;
 
-        public CalendarService(ITimeProvider timeProvider)
+        public CalendarService(TimeProvider timeProvider)
         {
             _timeProvider = timeProvider;
         }
 
         public DateTime IsItWednesday()
         {
-            var result = _timeProvider.Now;
-            return result;
+            var result = _timeProvider.GetUtcNow();
+
+            return result.DateTime;
         }
     }
 }
